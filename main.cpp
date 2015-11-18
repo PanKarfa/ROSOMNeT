@@ -1,5 +1,10 @@
 #include <iostream>
 
+#include "Simulation.h"
+
 int main() {
-	std::cout << "Hello world" << std::endl;
+	std::cout << "ROSOMNeT++ starting up" << std::endl;
+
+	Simulation *sim = new Simulation("config.ini");
+	sim->runSimulation();
 }

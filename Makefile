@@ -1,4 +1,12 @@
-all: main
+CXX := g++
 
-main: main.cpp
-	g++ main.cpp -o main
+all: main
+clean:
+	rm -f main
+	rm -f *.o
+
+main: main.cpp Simulation.o
+	$(CXX) $? -o main 
+	
+%.o: %.cpp
+	$(CXX) -o $@ -c $<
