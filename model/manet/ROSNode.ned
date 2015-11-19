@@ -15,75 +15,42 @@
 
 package manet;
 
-import inet.nodes.inet.WirelessHost;
-import inet.applications.IPingApp;
-import inet.applications.ISCTPApp;
-import inet.applications.ITCPApp;
-import inet.applications.IUDPApp;
-import inet.transport.ISCTP;
-import inet.transport.ITCP;
-import inet.transport.IUDP;
-import inet.util.PcapRecorder;
-import inet.networklayer.ipv4.RoutingTable;
-import inet.networklayer.common.InterfaceTable;
-import inet.mobility.contract.IMobility;
-import inet.linklayer.IWirelessNic;
-import inet.linklayer.IWiredNic;
-import inet.linklayer.IExternalNic;
-import inet.base.NotificationBoard;
-import inet.nodes.inet.NetworkLayer;
-import inet.transport.udp.UDP;
+import inet.mobility.static.StationaryMobility;
+import inet.linklayer.ieee802154.Ieee802154NarrowbandNic;
 
-// This host is an example on how a host with INET network stack
-// can be equipped with mobility- and wireless-modules from MiXiM. 
-//
-// It contains an INET network stack and a MiXiM 802.15.4 NIC (TI_CC2420)
-// as well as a battery module from MiXiM which is used by the NIC.
-//
-// This host's NIC is able to operate in a multi-ConnectionManager
-// network, i.e. more than one physical network in parallel (non-interfering).
-// TODO: factor out battery into INET
 
 module ROSNode {
-     parameters:
-        @display("i=device/pc2");
-        @node;
-        @labels(node,wireless-node);
+	parameters:
+		@display("i=device/pc2");
+		@node;
+		@labels(node,wireless-node);
+		@networkNode();
+		*.interfaceTableModule = "";
         
-        //NIC
-        string nic802154Type = default("");
+	gates:
+		input radio80211In @directIn;
+		input radio802154In @directIn;
+		inout direct[];
         
-    gates:
-     	input radio80211In @directIn;
-     	input radio802154In @directIn;
-        inout direct[];
+	submodules:
+		// Application
+		app: ROSForwarderApplication {
+			parameters:
+				@display("p=70,30;i=app");
+		}
         
-    submodules:
-        //Application
-        app: ROSForwarderApplication {
-            parameters:
-                @display("p=70,30;i=app");
-        }
+		// Mobility module
+		mobility: StationaryMobility {
+			parameters:
+				@display("p=53,111");
+		}
         
-        // Mobility module
-        mobility: <mobilityType> like IMobility {
-            parameters:
-                @display("p=53,111");
-        }
-                    
-        //NIC
-        nic802154: <nic802154Type> like IWirelessNic {
-            parameters:
-                @display("p=132,406,row,60;q=queue");
-        }
-         
-    connections allowunconnected:
- 
-        //# Connect MANET branch
+		// NIC
+		nic802154: Ieee802154NarrowbandNic {
+			parameters:
+				@display("p=132,406,row,60;q=queue");
+		}
 
-        if (nic802154Type != "") {
-            nic802154.upperLayerOut --> app.lower802154LayerIn;
-            nic802154.upperLayerIn <-- app.lower802154LayerOut;
-        }
+	connections allowunconnected:
 }
 

@@ -16,6 +16,7 @@
 package manet;
 
 import inet.world.radio.ChannelControl;
+import inet.physicallayer.ieee802154.packetlevel.Ieee802154NarrowbandScalarRadioMedium;
 
 import inet.networklayer.autorouting.ipv4.FlatNetworkConfigurator;
 import inet.nodes.inet.Router;
@@ -39,9 +40,6 @@ network MANET
         double playgroundLongitude = default(0.0); // geographic position of the playground's north-west corner
         
         int numNodes;
-        int numRouters = default(0);
-        
-        bool ethernet = default(false);
         
         @display("bgb=469,300,white;bgp=10,50");
     submodules:
@@ -62,14 +60,13 @@ network MANET
 //            parameters:
 //            	@display("p=391,24");
 //        }
-        
-        node[numNodes]: ROSNode {}
-        
-        //Visualization
-        visualizationController: VisualizationController if visualize {
-            @display("p=90,250");
+
+		radioMedium: Ieee802154NarrowbandScalarRadioMedium {
+            parameters:
+                @display("p=61,46");
         }
         
+        node[numNodes]: ROSNode {}
+          
     connections allowunconnected:
-        
 }

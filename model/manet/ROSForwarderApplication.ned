@@ -20,10 +20,10 @@ simple ROSForwarderApplication
     parameters:
         int packet802154ByteLength @unit ("B") = default(128B);
         
-    gates:
-        input lowerLayerIn; // from network layer
-        output lowerLayerOut; // to network layer
-        
-        input lower802154LayerIn; // from manet layer
-        output lower802154LayerOut; // to manet layer
+//    gates:
+//        input lowerLayerIn; // from network layer
+//        output lowerLayerOut; // to network layer
+//        
+//        input lower802154LayerIn; // from manet layer
+//        output lower802154LayerOut; // to manet layer
 }
