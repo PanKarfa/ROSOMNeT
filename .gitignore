@@ -1,3 +1,5 @@
 main
 .settings
 *.o
+src/Makefile
+out

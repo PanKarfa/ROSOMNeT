@@ -5,6 +5,6 @@
 int main() {
 	std::cout << "ROSOMNeT++ starting up" << std::endl;
 
-	Simulation *sim = new Simulation("config.ini");
+	Simulation *sim = new Simulation("omnetpp.ini");
 	sim->runSimulation();
 }
