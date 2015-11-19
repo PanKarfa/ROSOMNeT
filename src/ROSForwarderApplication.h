@@ -14,6 +14,7 @@ class ROSForwarderApplication: public cSimpleModule {
 public:
 	ROSForwarderApplication();
 
+private:
 	void initialize(int stage);
 	int numInitStages() const { return 2; }
 	void handleMessage(cMessage *msg);

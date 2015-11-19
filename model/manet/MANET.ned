@@ -67,6 +67,8 @@ network MANET
         }
         
         node[numNodes]: ROSNode {}
+        
+        syncNode: ROSSyncNode {}
           
     connections allowunconnected:
 }
