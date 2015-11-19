@@ -30,10 +30,10 @@ void ROSSyncApplication::initialize(int stage) {
 void ROSSyncApplication::handleMessage(cMessage *msg) {
 	// Handle time synchronization message
 	if(msg == syncMsg) {
-		cout << "ROSSyncPoint at " << setw(8) << fixed << simTime() << endl;
+		cout << "ROSSyncPoint at " << setw(8) << fixed << simTime() << " s" << endl;
 
 		// Sync with ROS
-		// TODO: This is very primitive code
+		// TODO: This is very primitive code, replace with ROS clock sync
 		usleep(TIME_STEP * 1000000);
 
 		// Schedule next sync invocation
