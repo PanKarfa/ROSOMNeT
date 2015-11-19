@@ -38,5 +38,7 @@ void ROSSyncApplication::handleMessage(cMessage *msg) {
 
 		// Schedule next sync invocation
 		scheduleAt(simTime() + TIME_STEP, syncMsg);
+	} else {
+		cerr << "ROS sync application received unexpected message" << endl;
 	}
 }
