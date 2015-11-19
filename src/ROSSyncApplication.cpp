@@ -17,6 +17,12 @@ using namespace std;
 
 ROSSyncApplication::ROSSyncApplication() {
 	cout << "ROSSyncApplication constructor" << endl;
+	syncMsg = new cMessage(ROS_SYNC_MESSAGE);
+}
+
+ROSSyncApplication::~ROSSyncApplication() {
+	cout << "ROSSyncApplication destructor" << endl;
+	delete syncMsg;
 }
 
 void ROSSyncApplication::initialize(int stage) {

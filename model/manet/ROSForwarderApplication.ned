@@ -17,13 +17,13 @@ package manet;
 
 simple ROSForwarderApplication
 {
-    parameters:
-        int packet802154ByteLength @unit ("B") = default(128B);
+	parameters:
+		int packet802154ByteLength @unit ("B") = default(128B);
         
-//    gates:
+	gates:
 //        input lowerLayerIn; // from network layer
 //        output lowerLayerOut; // to network layer
-//        
-//        input lower802154LayerIn; // from manet layer
-//        output lower802154LayerOut; // to manet layer
+
+		input lower802154LayerIn; // from manet layer
+        output lower802154LayerOut; // to manet layer
 }

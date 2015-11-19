@@ -52,5 +52,7 @@ module ROSNode {
 		}
 
 	connections allowunconnected:
+		nic802154.upperLayerOut --> app.lower802154LayerIn;
+		nic802154.upperLayerIn <-- app.lower802154LayerOut;
 }
 

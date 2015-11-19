@@ -13,11 +13,19 @@
 class ROSForwarderApplication: public cSimpleModule {
 public:
 	ROSForwarderApplication();
+	~ROSForwarderApplication();
 
 private:
+	const char* START_MESSAGE = "START_MESSAGE";
+
 	void initialize(int stage);
 	int numInitStages() const { return 2; }
 	void handleMessage(cMessage *msg);
+
+	cMessage* startMessage;
+
+    int lower802154LayerIn;
+    int lower802154LayerOut;
 };
 
 #endif /* SRC_ROSFORWARDERAPPLICATION_H */

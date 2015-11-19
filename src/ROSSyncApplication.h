@@ -16,12 +16,13 @@ class ROSSyncApplication: public cSimpleModule {
 public:
 	const double TIME_STEP = 0.100;
 	ROSSyncApplication();
+	~ROSSyncApplication();
 
 private:
 	void initialize(int stage);
 	void handleMessage(cMessage *msg);
 
-	cMessage *syncMsg = new cMessage(ROS_SYNC_MESSAGE);
+	cMessage *syncMsg;
 };
 
 #endif /* SRC_ROSSYNCAPPLICATION_H */
