@@ -60,7 +60,7 @@ module ROSNode {
         
     submodules:
         //Application
-        app: ROSForwarder {
+        app: ROSForwarderApplication {
             parameters:
                 @display("p=70,30;i=app");
         }

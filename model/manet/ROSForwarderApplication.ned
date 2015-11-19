@@ -15,7 +15,7 @@
 
 package manet;
 
-simple ROSForwarder
+simple ROSForwarderApplication
 {
     parameters:
         int packet802154ByteLength @unit ("B") = default(128B);
