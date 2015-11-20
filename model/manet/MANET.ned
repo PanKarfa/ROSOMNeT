@@ -16,7 +16,10 @@
 package manet;
 
 import inet.world.radio.ChannelControl;
+
+import inet.physicallayer.idealradio.IdealRadioMedium;
 import inet.physicallayer.ieee802154.packetlevel.Ieee802154NarrowbandScalarRadioMedium;
+import inet.physicallayer.ieee802154.bitlevel.Ieee802154UWBIRRadioMedium;
 
 import inet.networklayer.autorouting.ipv4.FlatNetworkConfigurator;
 import inet.nodes.inet.Router;
@@ -62,6 +65,8 @@ network MANET
 //        }
 
 		radioMedium: Ieee802154NarrowbandScalarRadioMedium {
+//		radioMedium: Ieee802154UWBIRRadioMedium {
+//		radioMedium: IdealRadioMedium {
             parameters:
                 @display("p=61,46");
         }

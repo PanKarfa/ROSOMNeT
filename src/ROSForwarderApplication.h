@@ -16,6 +16,7 @@ public:
 	~ROSForwarderApplication();
 
 private:
+	const char* ROS_MANET_PACKET = "@ROSManetPacket@";
 	const char* START_MESSAGE = "START_MESSAGE";
 
 	void initialize(int stage);

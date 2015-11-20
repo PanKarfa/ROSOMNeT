@@ -10,8 +10,6 @@
 
 #include <omnetpp.h>
 
-#define ROS_SYNC_MESSAGE "@ROSSyncMessage@"
-
 class ROSSyncApplication: public cSimpleModule {
 public:
 	const double TIME_STEP = 0.100;
@@ -19,6 +17,8 @@ public:
 	~ROSSyncApplication();
 
 private:
+	const char* ROS_SYNC_MESSAGE = "@ROSSyncMessage@";
+
 	void initialize(int stage);
 	void handleMessage(cMessage *msg);
 
