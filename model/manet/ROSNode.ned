@@ -21,9 +21,7 @@ import inet.linklayer.ieee802154.Ieee802154NarrowbandNic;
 
 module ROSNode {
 	parameters:
-		@display("i=device/pc2");
 		@node;
-		@labels(node,wireless-node);
 		@networkNode();
 		*.interfaceTableModule = "";
         

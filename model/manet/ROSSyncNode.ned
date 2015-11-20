@@ -17,13 +17,9 @@ package manet;
 
 module ROSSyncNode {
 	parameters:
-		@display("i=device/pc2");
 		@node;
 		
 	submodules:
 		// Application
-		app: ROSSyncApplication {
-			parameters:
-				@display("p=70,30;i=app");
-		}
+		app: ROSSyncApplication {}
 }
