@@ -16,32 +16,7 @@
 package manet;
 
 import inet.mobility.static.StationaryMobility;
-import inet.linklayer.ieee802154.Ieee802154NarrowbandNic;
 
-
-module ROSNode {
-	parameters:
-		@node;
-		@networkNode();
-		*.interfaceTableModule = "";
-        
-	gates:
-		input radio80211In @directIn;
-		input radio802154In @directIn;
-		inout direct[];
-        
-	submodules:
-		// Application
-		app: ROSForwarderApplication {}
-        
-		// Mobility module
-		mobility: CustomMobility {}
-        
-		// NIC
-		nic802154: Ieee802154NarrowbandNic {}
-
-	connections allowunconnected:
-		nic802154.upperLayerOut --> app.lower802154LayerIn;
-		nic802154.upperLayerIn <-- app.lower802154LayerOut;
+simple CustomMobility extends StationaryMobility {
+    @class(CustomMobility);
 }
-

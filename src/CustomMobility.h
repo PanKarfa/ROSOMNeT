@@ -13,35 +13,21 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package manet;
+#ifndef __MANET_CUSTOMMOBILITY_H
+#define __MANET_CUSTOMMOBILITY_H
 
-import inet.mobility.static.StationaryMobility;
-import inet.linklayer.ieee802154.Ieee802154NarrowbandNic;
+#include <inet/mobility/base/MobilityBase.h>
+#include <inet/common/geometry/common/Coord.h>
 
+using namespace inet;
 
-module ROSNode {
-	parameters:
-		@node;
-		@networkNode();
-		*.interfaceTableModule = "";
-        
-	gates:
-		input radio80211In @directIn;
-		input radio802154In @directIn;
-		inout direct[];
-        
-	submodules:
-		// Application
-		app: ROSForwarderApplication {}
-        
-		// Mobility module
-		mobility: CustomMobility {}
-        
-		// NIC
-		nic802154: Ieee802154NarrowbandNic {}
+class CustomMobility: public MobilityBase {
+protected:
+	virtual void handleSelfMessage(cMessage *msg);
+public:
+	virtual void setCurrentPosition(Coord coordinates);
+	virtual Coord getCurrentPosition();
+	virtual Coord getCurrentSpeed();
+};
 
-	connections allowunconnected:
-		nic802154.upperLayerOut --> app.lower802154LayerIn;
-		nic802154.upperLayerIn <-- app.lower802154LayerOut;
-}
-
+#endif // __MANET_CUSTOMMOBILITY_H

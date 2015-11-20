@@ -21,7 +21,7 @@ Register_GlobalConfigOption(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "A 
 Register_GlobalConfigOption(CFGID_CONFIGURATION_CLASS, "configuration-class", CFG_STRING, "", "Part of the Envir plugin mechanism: selects the class from which all configuration information will be obtained. This option lets you replace omnetpp.ini with some other implementation, e.g. database input. The simulation program still has to bootstrap from an omnetpp.ini (which contains the configuration-class setting). The class should implement the cConfigurationEx interface.");
 Register_GlobalConfigOption(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, "", "Selects the user interface to be started. Possible values are Cmdenv and Tkenv. This option is normally left empty, as it is more convenient to specify the user interface via a command-line option or the IDE's Run and Debug dialogs. New user interfaces can be defined by subclassing cRunnableEnvir.");
 
-// helper macro
+// Helper macro
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
      var = dynamic_cast<baseclass *>(var ## _tmp); \
@@ -36,9 +36,7 @@ void Simulation::runSimulation() {
 	std::cout << "Running simulation based on configuration file: " << configFileName << std::endl;
 
 	cStaticFlag dummy;
-	//
 	// SETUPplatdefs.h
-	//
 	cSimulation *simulationobject = NULL;
 	cRunnableEnvir *app = NULL;
 	SectionBasedConfiguration *bootconfig = NULL;
@@ -63,13 +61,13 @@ void Simulation::runSimulation() {
 		cout << "Loading libraries" << endl;
 		std::vector < std::string > libs = bootconfig->getAsFilenames(CFGID_LOAD_LIBS);
 		for (int k = 0; k < (int) libs.size(); k++) {
-			::printf("Loading %s ...\n", libs[k].c_str());
+			printf("Loading %s ...\n", libs[k].c_str());
 			loadExtensionLibrary(libs[k].c_str());
 		}
 
 		// Create custom configuration object, if needed.
 		cout << "Creating configuration object" << endl;
-		std::string configclass = bootconfig->getAsString(CFGID_CONFIGURATION_CLASS);
+		string configclass = bootconfig->getAsString(CFGID_CONFIGURATION_CLASS);
 		if (configclass.empty()) {
 			configobject = bootconfig;
 		} else {
@@ -88,7 +86,7 @@ void Simulation::runSimulation() {
 
 		// Validate the configuration, but make sure we don't report cmdenv-* keys as errors if Cmdenv is absent; same for Tkenv.
 		cout << "Validating configuration" << endl;
-		std::string ignorablekeys;
+		string ignorablekeys;
 		if (omnetapps.getInstance()->lookup("Cmdenv") == NULL) {
 			ignorablekeys += " cmdenv-*";
 		}
@@ -101,19 +99,17 @@ void Simulation::runSimulation() {
 		// will be done by the user interface class.
 		cout << "Setting user interface" << endl;
 		const char * appname = "Cmdenv";
-		/*		if (appname == NULL || opp_strcmp(appname, "") == 0)
-		 appname = configobject->getAsString(CFGID_USER_INTERFACE).c_str();*/
 		cOmnetAppRegistration *appreg = NULL;
 		if (!(appname == NULL || opp_strcmp(appname, "") == 0)) {
 			// look up specified user interface
 			appreg = static_cast<cOmnetAppRegistration *>(omnetapps.getInstance()->lookup(appname));
 			if (!appreg) {
-				::printf("\n"
+				printf("\n"
 						"User interface '%s' not found (not linked in or loaded dynamically).\n"
 						"Available ones are:\n", appname);
 				cRegistrationList *a = omnetapps.getInstance();
 				for (int i = 0; i < a->size(); i++)
-					::printf("  %s : %s\n", a->get(i)->getName(), a->get(i)->info().c_str());
+					printf("  %s : %s\n", a->get(i)->getName(), a->get(i)->info().c_str());
 
 				throw cRuntimeError("Could not start user interface '%s'", appname);
 			}
@@ -124,13 +120,11 @@ void Simulation::runSimulation() {
 				throw cRuntimeError("No user interface (Cmdenv, Tkenv, etc.) found");
 		}
 
-		//
 		// Create interface object.
-		//
-		::printf("Setting up %s...\n", appreg->getName());
+		printf("Setting up %s...\n", appreg->getName());
 		app = appreg->createOne();
-	} catch (std::exception& e) {
-		::fprintf(stderr, "\n<!> Error during startup: %s.\n", e.what());
+	} catch (exception& e) {
+		fprintf(stderr, "\n<!> Error during startup: %s.\n", e.what());
 		if (app) {
 			delete app;
 			app = NULL;
@@ -139,9 +133,7 @@ void Simulation::runSimulation() {
 		}
 	}
 
-	//
 	// RUN
-	//
 	try {
 		if (app) {
 			simulationobject = new cSimulation("simulation", app);
@@ -149,12 +141,10 @@ void Simulation::runSimulation() {
 			app->run(0, NULL, configobject);
 		}
 	} catch (std::exception& e) {
-		::fprintf(stderr, "\n<!> %s.\n", e.what());
+		fprintf(stderr, "\n<!> %s.\n", e.what());
 	}
 
-	//
 	// SHUTDOWN
-	//
 	cSimulation::setActiveSimulation (NULL);
 	delete simulationobject;  // will delete app as well
 }

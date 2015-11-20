@@ -10,28 +10,32 @@
 
 #include "ROSForwarderApplication.h"
 #include "IEEE802154_m.h"
+#include "CustomMobility.h"
 
-Define_Module(ROSForwarderApplication);
+Define_Module (ROSForwarderApplication);
 
 using namespace std;
 using namespace inet;
 
 ROSForwarderApplication::ROSForwarderApplication() {
 	cout << "ROSForwarderApplication constructor" << endl;
-	startMessage = new cMessage(START_MESSAGE);
+	startTry1Message = new cMessage(START_MESSAGE);
+	startTry2Message = new cMessage(START_MESSAGE);
 }
 
 ROSForwarderApplication::~ROSForwarderApplication() {
 	cout << "ROSForwarderApplication destructor" << endl;
-	delete startMessage;
+	delete startTry1Message;
+	delete startTry2Message;
 }
 
 void ROSForwarderApplication::initialize(int stage) {
 	cout << "ROSForwarderApplication init " << stage << endl;
 
-	switch(stage) {
+	switch (stage) {
 	case 0:
-		scheduleAt(1, startMessage);
+		scheduleAt(1, startTry1Message);
+		scheduleAt(2, startTry2Message);
 		break;
 	case 1:
 		lower802154LayerIn = findGate("lower802154LayerIn");
@@ -43,7 +47,11 @@ void ROSForwarderApplication::initialize(int stage) {
 void ROSForwarderApplication::handleMessage(cMessage *msg) {
 	cout << "ROSForwarderApplication handle message" << endl;
 
-	if(msg == startMessage) {
+	if(msg == startTry2Message) {
+		setPosition(0, 0, 0);
+	}
+
+	if (msg == startTry1Message || msg == startTry2Message) {
 		cout << "Start message received" << endl;
 
 		cout << "Sending packet at " << simTime() << endl;
@@ -60,14 +68,14 @@ void ROSForwarderApplication::handleMessage(cMessage *msg) {
 		packet->setControlInfo(ctrl);
 
 		send(packet, lower802154LayerOut);
-	} else if(opp_strcmp(msg->getName(), ROS_MANET_PACKET) == 0) {
+	} else if (opp_strcmp(msg->getName(), ROS_MANET_PACKET) == 0) {
 		cout << "Received MANET packet: " << endl;
 		cout << ">> id:		" << msg->getId() << endl;
 		cout << ">> time:	" << simTime() << endl;
 
 		IEEE802154Packet *ieee802154Packet = check_and_cast<IEEE802154Packet*>(msg);
 		char *data = new char[ieee802154Packet->getDataArraySize()];
-		for(unsigned int i = 0; i < ieee802154Packet->getDataArraySize(); ++i) {
+		for (unsigned int i = 0; i < ieee802154Packet->getDataArraySize(); ++i) {
 			data[i] = ieee802154Packet->getData(i);
 		}
 		cout << ">> data:	" << hex << data << endl;
@@ -78,4 +86,24 @@ void ROSForwarderApplication::handleMessage(cMessage *msg) {
 	}
 
 	delete msg;
+}
+
+void ROSForwarderApplication::setPosition(const double x, const double y, const double z) {
+	CustomMobility *mobility = dynamic_cast<CustomMobility*>(getMobilityModule());
+	if (mobility != NULL) {
+		Coord currentPosition = mobility->getCurrentPosition();
+		Coord newPosition = Coord::ZERO;
+		newPosition.x = x;
+		newPosition.y = y;
+		newPosition.z = z;
+		mobility->setCurrentPosition(newPosition);
+	} else {
+		std::cerr << "Attempt to set position with custom mobility == NULL" << endl;
+	}
+}
+
+IMobility* ROSForwarderApplication::getMobilityModule() {
+	IMobility *mobility = check_and_cast<IMobility *>(
+			getParentModule()->getSubmodule("mobility"));
+	return mobility;
 }
