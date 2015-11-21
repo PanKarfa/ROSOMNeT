@@ -8,6 +8,8 @@
 #include <inet/linklayer/common/MACAddress.h>
 #include <inet/linklayer/common/SimpleLinkLayerControlInfo.h>
 
+#include <string>
+
 #include "ROSForwarderApplication.h"
 #include "IEEE802154_m.h"
 #include "CustomMobility.h"
@@ -17,8 +19,10 @@ Define_Module (ROSForwarderApplication);
 using namespace std;
 using namespace inet;
 
-ROSForwarderApplication::ROSForwarderApplication() {
-	cout << "ROSForwarderApplication constructor" << endl;
+int ROSForwarderApplication::instanceCounter = 0;
+
+ROSForwarderApplication::ROSForwarderApplication():nameSpace("/robot_" + to_string(instanceCounter++) + "/") {
+	cout << "ROSForwarderApplication constructor: " << nameSpace << endl;
 	startTry1Message = new cMessage(START_MESSAGE);
 	startTry2Message = new cMessage(START_MESSAGE);
 }

@@ -8,15 +8,17 @@
 #ifndef SRC_ROSFORWARDERAPPLICATION_H
 #define SRC_ROSFORWARDERAPPLICATION_H
 
+#include <string>
+
 #include <ros/ros.h>
+#include <std_msgs/String.h>
 
 #include <omnetpp.h>
 #include <inet/mobility/contract/IMobility.h>
 
-#include <std_msgs/String.h>
-
 using namespace inet;
 using namespace ros;
+using namespace std;
 
 class ROSForwarderApplication: public cSimpleModule {
 public:
@@ -29,6 +31,9 @@ private:
 	const char* ROS_MANET_PACKET = "@ROSManetPacket@";
 	const char* START_MESSAGE = "START_MESSAGE";
 
+	static int instanceCounter;
+
+	const string nameSpace;
 	void initialize(int stage);
 	void initializeStage1();
 	void initializeStage2();
