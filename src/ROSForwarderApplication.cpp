@@ -38,20 +38,20 @@ void ROSForwarderApplication::initialize(int stage) {
 
 	switch (stage) {
 	case 0:
-		initializeStage1();
+		initializeStage0();
 		break;
 	case 1:
-		initializeStage2();
+		initializeStage1();
 		break;
 	}
 }
 
-void ROSForwarderApplication::initializeStage1() {
+void ROSForwarderApplication::initializeStage0() {
 	scheduleAt(1, startTry1Message);
 	scheduleAt(2, startTry2Message);
 }
 
-void ROSForwarderApplication::initializeStage2() {
+void ROSForwarderApplication::initializeStage1() {
 	lower802154LayerIn = findGate("lower802154LayerIn");
 	lower802154LayerOut = findGate("lower802154LayerOut");
 }

@@ -8,19 +8,38 @@
 #ifndef SRC_ROSSYNCAPPLICATION_H
 #define SRC_ROSSYNCAPPLICATION_H
 
+#include <string>
+
 #include <omnetpp.h>
+
+#include <rosgraph_msgs/Clock.h>
+
+#include "ROSOMNeT.h"
+
+using namespace std;
+using namespace ros;
 
 class ROSSyncApplication: public cSimpleModule {
 public:
 	const double TIME_STEP = 0.100;
+	const long CLOCK_QUEUE_LENGTH = 1000;
+
 	ROSSyncApplication();
 	~ROSSyncApplication();
 
 private:
 	const char* ROS_SYNC_MESSAGE = "@ROSSyncMessage@";
+	const string CLOCK_TOPIC = "/clock";
+
+	ROSOMNeT &rosomnet;
+
+	Subscriber clockSubscriber;
 
 	void initialize(int stage);
+	void initializeStage0();
+	void initializeStage1();
 	void handleMessage(cMessage *msg);
+	void clockCallback(const rosgraph_msgs::Clock &msg);
 
 	cMessage *syncMsg;
 };

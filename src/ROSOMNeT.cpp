@@ -42,6 +42,10 @@ ROSOMNeT::ROSOMNeT() {}
 
 ROSOMNeT::~ROSOMNeT() {}
 
+NodeHandle & ROSOMNeT::getROSNode() {
+	return *rosNode;
+}
+
 void ROSOMNeT::stopROS() {
 	cout << "Shutting down ROS" << endl;
 	shutdown();

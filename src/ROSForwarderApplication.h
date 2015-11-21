@@ -35,8 +35,8 @@ private:
 
 	const string nameSpace;
 	void initialize(int stage);
+	void initializeStage0();
 	void initializeStage1();
-	void initializeStage2();
 	int numInitStages() const { return 2; }
 	void handleMessage(cMessage *msg);
 	IMobility* getMobilityModule();

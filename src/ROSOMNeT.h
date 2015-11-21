@@ -21,12 +21,12 @@ public:
 	ROSOMNeT();
 	~ROSOMNeT();
 
+	static ROSOMNeT &getInstance();
+
 	void runROSNode();
 	void runSimulation(string configFileName);
-
 	void stopROS();
-
-	static ROSOMNeT &getInstance();
+	NodeHandle &getROSNode();
 
 private:
 	static ROSOMNeT instance;
