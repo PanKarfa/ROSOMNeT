@@ -11,10 +11,12 @@
 #include <string>
 
 #include <ros/ros.h>
-#include <std_msgs/String.h>
+#include <nav_msgs/Odometry.h>
 
 #include <omnetpp.h>
 #include <inet/mobility/contract/IMobility.h>
+
+#include "ROSOMNeT.h"
 
 using namespace inet;
 using namespace ros;
@@ -30,16 +32,20 @@ public:
 private:
 	const char* ROS_MANET_PACKET = "@ROSManetPacket@";
 	const char* START_MESSAGE = "START_MESSAGE";
+	const string TRUTH_POSE_TOPIC = "base_pose_ground_truth";
+	const long TOPIC_QUEUE_LENGTH = 1000;
 
 	static int instanceCounter;
 
 	const string nameSpace;
+	ROSOMNeT &rosomnet;
 	void initialize(int stage);
 	void initializeStage0();
 	void initializeStage1();
 	int numInitStages() const { return 2; }
 	void handleMessage(cMessage *msg);
 	IMobility* getMobilityModule();
+	void truthPoseCallback(const nav_msgs::Odometry &msg);
 
 	cMessage* startTry1Message;
 	cMessage* startTry2Message;
@@ -47,12 +53,8 @@ private:
     int lower802154LayerIn;
     int lower802154LayerOut;
 
-    Subscriber *chatterSubscriber;
-
-    Subscriber *truthPoseSubscriber;
-    Publisher *receivedPacketPublisher;
-
-    void chatterCallback(const std_msgs::String &msg);
+    Subscriber truthPoseSubscriber;
+    Publisher receivedPacketPublisher;
 };
 
 #endif /* SRC_ROSFORWARDERAPPLICATION_H */

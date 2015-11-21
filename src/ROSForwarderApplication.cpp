@@ -21,7 +21,8 @@ using namespace inet;
 
 int ROSForwarderApplication::instanceCounter = 0;
 
-ROSForwarderApplication::ROSForwarderApplication():nameSpace("/robot_" + to_string(instanceCounter++) + "/") {
+ROSForwarderApplication::ROSForwarderApplication() :
+		nameSpace("/robot_" + to_string(instanceCounter++) + "/"), rosomnet(ROSOMNeT::getInstance()) {
 	cout << "ROSForwarderApplication constructor: " << nameSpace << endl;
 	startTry1Message = new cMessage(START_MESSAGE);
 	startTry2Message = new cMessage(START_MESSAGE);
@@ -54,12 +55,26 @@ void ROSForwarderApplication::initializeStage0() {
 void ROSForwarderApplication::initializeStage1() {
 	lower802154LayerIn = findGate("lower802154LayerIn");
 	lower802154LayerOut = findGate("lower802154LayerOut");
+
+	// Subscribe to ROS truth pose
+	truthPoseSubscriber = rosomnet.getROSNode().subscribe(nameSpace + TRUTH_POSE_TOPIC, TOPIC_QUEUE_LENGTH,
+			&ROSForwarderApplication::truthPoseCallback, this);
+}
+
+void ROSForwarderApplication::truthPoseCallback(const nav_msgs::Odometry &msg) {
+	double x = msg.pose.pose.position.x;
+	double y = msg.pose.pose.position.y;
+	double z = msg.pose.pose.position.z;
+
+	setPosition(x, y, z);
+
+	cout << nameSpace << " now at: (" << x << "," << y << "," << z << ")" << endl;
 }
 
 void ROSForwarderApplication::handleMessage(cMessage *msg) {
 	cout << "ROSForwarderApplication handle message" << endl;
 
-	if(msg == startTry2Message) {
+	if (msg == startTry2Message) {
 		setPosition(0, 0, 0);
 	}
 
@@ -115,7 +130,6 @@ void ROSForwarderApplication::setPosition(const double x, const double y, const 
 }
 
 IMobility* ROSForwarderApplication::getMobilityModule() {
-	IMobility *mobility = check_and_cast<IMobility *>(
-			getParentModule()->getSubmodule("mobility"));
+	IMobility *mobility = check_and_cast<IMobility *>(getParentModule()->getSubmodule("mobility"));
 	return mobility;
 }
