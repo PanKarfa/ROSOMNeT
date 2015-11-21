@@ -1,10 +1,23 @@
 #include <iostream>
 
-#include "Simulation.h"
+#include <std_msgs/String.h>
+
+#include "ROSNode.h"
+#include "ROSOMNeT.h"
+
+using namespace std;
+using namespace ros;
 
 int main() {
-	std::cout << "ROSOMNeT++ starting up" << std::endl;
+	cout << "ROSOMNeT++ starting up" << endl;
 
-	Simulation *sim = new Simulation("omnetpp.ini");
-	sim->runSimulation();
+	ROSOMNeT &rosomnet = ROSOMNeT::getInstance();
+
+	cout << "Starting ROS node" << endl;
+	rosomnet.runROSNode();
+	cout << "Running OMNeT++ simulation" << endl;
+	rosomnet.runSimulation("omnetpp.ini");
+	cout << "All done" << endl;
+
+	return 0;
 }

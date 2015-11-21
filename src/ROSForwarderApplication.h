@@ -8,10 +8,15 @@
 #ifndef SRC_ROSFORWARDERAPPLICATION_H
 #define SRC_ROSFORWARDERAPPLICATION_H
 
+#include <ros/ros.h>
+
 #include <omnetpp.h>
 #include <inet/mobility/contract/IMobility.h>
 
+#include <std_msgs/String.h>
+
 using namespace inet;
+using namespace ros;
 
 class ROSForwarderApplication: public cSimpleModule {
 public:
@@ -25,6 +30,8 @@ private:
 	const char* START_MESSAGE = "START_MESSAGE";
 
 	void initialize(int stage);
+	void initializeStage1();
+	void initializeStage2();
 	int numInitStages() const { return 2; }
 	void handleMessage(cMessage *msg);
 	IMobility* getMobilityModule();
@@ -34,6 +41,13 @@ private:
 
     int lower802154LayerIn;
     int lower802154LayerOut;
+
+    Subscriber *chatterSubscriber;
+
+    Subscriber *truthPoseSubscriber;
+    Publisher *receivedPacketPublisher;
+
+    void chatterCallback(const std_msgs::String &msg);
 };
 
 #endif /* SRC_ROSFORWARDERAPPLICATION_H */

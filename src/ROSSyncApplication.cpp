@@ -22,7 +22,7 @@ ROSSyncApplication::ROSSyncApplication() {
 
 ROSSyncApplication::~ROSSyncApplication() {
 	cout << "ROSSyncApplication destructor" << endl;
-	delete syncMsg;
+//	delete syncMsg;
 }
 
 void ROSSyncApplication::initialize(int stage) {

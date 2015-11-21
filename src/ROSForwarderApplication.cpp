@@ -25,23 +25,31 @@ ROSForwarderApplication::ROSForwarderApplication() {
 
 ROSForwarderApplication::~ROSForwarderApplication() {
 	cout << "ROSForwarderApplication destructor" << endl;
-	delete startTry1Message;
-	delete startTry2Message;
+//	delete startTry1Message;
+//	delete startTry2Message;
 }
 
 void ROSForwarderApplication::initialize(int stage) {
-	cout << "ROSForwarderApplication init " << stage << endl;
+	cout << "ROSForwarderApplication initialization: " << stage << endl;
 
 	switch (stage) {
 	case 0:
-		scheduleAt(1, startTry1Message);
-		scheduleAt(2, startTry2Message);
+		initializeStage1();
 		break;
 	case 1:
-		lower802154LayerIn = findGate("lower802154LayerIn");
-		lower802154LayerOut = findGate("lower802154LayerOut");
+		initializeStage2();
 		break;
 	}
+}
+
+void ROSForwarderApplication::initializeStage1() {
+	scheduleAt(1, startTry1Message);
+	scheduleAt(2, startTry2Message);
+}
+
+void ROSForwarderApplication::initializeStage2() {
+	lower802154LayerIn = findGate("lower802154LayerIn");
+	lower802154LayerOut = findGate("lower802154LayerOut");
 }
 
 void ROSForwarderApplication::handleMessage(cMessage *msg) {

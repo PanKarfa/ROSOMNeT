@@ -5,9 +5,12 @@
  *      Author: Vladimir Matena
  */
 
-#include "Simulation.h"
+#include "ROSOMNeT.h"
 
 #include <iostream>
+#include <thread>
+
+#include <ros/ros.h>
 
 #include <omnetpp.h>
 #include <sectionbasedconfig.h>
@@ -16,10 +19,13 @@
 #include <appreg.h>
 
 using namespace std;
+using namespace ros;
 
 Register_GlobalConfigOption(CFGID_LOAD_LIBS, "load-libs", CFG_FILENAMES, "", "A space-separated list of dynamic libraries to be loaded on startup. The libraries should be given without the `.dll' or `.so' suffix -- that will be automatically appended.");
 Register_GlobalConfigOption(CFGID_CONFIGURATION_CLASS, "configuration-class", CFG_STRING, "", "Part of the Envir plugin mechanism: selects the class from which all configuration information will be obtained. This option lets you replace omnetpp.ini with some other implementation, e.g. database input. The simulation program still has to bootstrap from an omnetpp.ini (which contains the configuration-class setting). The class should implement the cConfigurationEx interface.");
 Register_GlobalConfigOption(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, "", "Selects the user interface to be started. Possible values are Cmdenv and Tkenv. This option is normally left empty, as it is more convenient to specify the user interface via a command-line option or the IDE's Run and Debug dialogs. New user interfaces can be defined by subclassing cRunnableEnvir.");
+
+ROSOMNeT ROSOMNeT::instance;
 
 // Helper macro
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
@@ -28,11 +34,41 @@ Register_GlobalConfigOption(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, 
      if (!var) \
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
-Simulation::Simulation(std::string configFileName) :
-		configFileName(configFileName) {
+ROSOMNeT& ROSOMNeT::getInstance() {
+	return instance;
 }
 
-void Simulation::runSimulation() {
+ROSOMNeT::ROSOMNeT() {}
+
+ROSOMNeT::~ROSOMNeT() {}
+
+void ROSOMNeT::stopROS() {
+	cout << "Shutting down ROS" << endl;
+	shutdown();
+	cout << "Joining ROS thread" << endl;
+	rosThread->join();
+
+	delete rosNode;
+	delete rosThread;
+}
+
+void ROSOMNeT::runROSNode() {
+	cout << "Running ROS node" << endl;
+	// Initialize ROS
+	init(M_string(), "ROSOMNeT");
+
+	rosNode = new NodeHandle();
+
+	rosThread = new thread(&ROSOMNeT::rosMain, this);
+}
+
+void ROSOMNeT::rosMain() {
+	cout << "ROS Main spinning on ROS" << endl;
+	spin();
+	cout << "No more spinning on ROS" << endl;
+}
+
+void ROSOMNeT::runSimulation(string configFileName) {
 	std::cout << "Running simulation based on configuration file: " << configFileName << std::endl;
 
 	cStaticFlag dummy;

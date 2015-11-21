@@ -60,7 +60,12 @@ makefiles:
 	-I${INET_DIR}/src/mobility/common \
 	-I${INET_DIR}/src/mobility/contract \
 	-L${INET_DIR}/out/$(CONFIGNAME)/src \
-	-lINET -KINET_PROJ=${INET_DIR} -KV=1
+	-lINET -KINET_PROJ=${INET_DIR} -KV=1 \
+	-L/opt/ros/indigo/lib \
+	-lroscpp \
+	-lrostime \
+	-lrosconsole \
+	-lroscpp_serialization
 
 
 checkmakefiles: makefiles
