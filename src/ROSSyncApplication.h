@@ -9,6 +9,8 @@
 #define SRC_ROSSYNCAPPLICATION_H
 
 #include <string>
+#include <condition_variable>
+#include <mutex>
 
 #include <omnetpp.h>
 
@@ -32,8 +34,10 @@ private:
 	const string CLOCK_TOPIC = "/clock";
 
 	ROSOMNeT &rosomnet;
-
 	Subscriber clockSubscriber;
+	cMessage *syncMsg;
+	mutex syncMutex;
+	condition_variable syncCondition;
 
 	void initialize(int stage);
 	void initializeStage0();
@@ -41,7 +45,7 @@ private:
 	void handleMessage(cMessage *msg);
 	void clockCallback(const rosgraph_msgs::Clock &msg);
 
-	cMessage *syncMsg;
+
 };
 
 #endif /* SRC_ROSSYNCAPPLICATION_H */

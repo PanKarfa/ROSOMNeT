@@ -54,17 +54,19 @@ void ROSSyncApplication::initializeStage1() {
 }
 
 void ROSSyncApplication::clockCallback(const rosgraph_msgs::Clock &msg) {
-	cout << "Clock callback" << endl;
+	cout << "ROSClockSignal...";
+	syncCondition.notify_one();
 }
 
 void ROSSyncApplication::handleMessage(cMessage *msg) {
 	// Handle time synchronization message
 	if (msg == syncMsg) {
-		cout << "ROSSyncPoint at " << setw(8) << fixed << simTime() << " s" << endl;
-
 		// Sync with ROS
-		// TODO: This is very primitive code, replace with ROS clock sync
-		usleep(TIME_STEP * 1000000);
+		cout << "At " << setw(8) << fixed << simTime() << " s OMNeT++Waiting...";
+		unique_lock<std::mutex> lock(syncMutex);
+		syncCondition.wait(lock);
+		lock.unlock();
+		cout << "Done" << endl;
 
 		// Schedule next sync invocation
 		scheduleAt(simTime() + TIME_STEP, syncMsg);
