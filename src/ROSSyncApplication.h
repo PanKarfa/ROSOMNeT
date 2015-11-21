@@ -42,6 +42,7 @@ private:
 	void initialize(int stage);
 	void initializeStage0();
 	void initializeStage1();
+	int numInitStages() const { return 2; }
 	void handleMessage(cMessage *msg);
 	void clockCallback(const rosgraph_msgs::Clock &msg);
 

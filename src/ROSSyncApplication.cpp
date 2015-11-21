@@ -42,15 +42,13 @@ void ROSSyncApplication::initialize(int stage) {
 void ROSSyncApplication::initializeStage0() {
 	cout << "Scheduling message at 0" << endl;
 	scheduleAt(0, syncMsg);
+}
 
+void ROSSyncApplication::initializeStage1() {
 	// Start listening to ROS clock topic
 	cout << "Subscribing " << CLOCK_TOPIC << " topic" << endl;
 	clockSubscriber = rosomnet.getROSNode().subscribe(CLOCK_TOPIC, CLOCK_QUEUE_LENGTH,
 			&ROSSyncApplication::clockCallback, this);
-}
-
-void ROSSyncApplication::initializeStage1() {
-
 }
 
 void ROSSyncApplication::clockCallback(const rosgraph_msgs::Clock &msg) {
@@ -63,7 +61,7 @@ void ROSSyncApplication::handleMessage(cMessage *msg) {
 	if (msg == syncMsg) {
 		// Sync with ROS
 		cout << "At " << setw(8) << fixed << simTime() << " s OMNeT++Waiting...";
-		unique_lock<std::mutex> lock(syncMutex);
+		unique_lock < std::mutex > lock(syncMutex);
 		syncCondition.wait(lock);
 		lock.unlock();
 		cout << "Done" << endl;
