@@ -24,6 +24,8 @@ ROSSyncApplication::ROSSyncApplication() :
 
 ROSSyncApplication::~ROSSyncApplication() {
 	cout << "ROSSyncApplication destructor" << endl;
+// TODO: Properly delete message
+//	drop(syncMsg);
 //	delete syncMsg;
 }
 

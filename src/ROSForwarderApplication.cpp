@@ -2,13 +2,14 @@
  * ROSForwarderApplication.cpp
  *
  *  Created on: 19. 11. 2015
- *      Author: vlada
+ *      Author: Vladimir Matena
  */
 
 #include <inet/linklayer/common/MACAddress.h>
 #include <inet/linklayer/common/SimpleLinkLayerControlInfo.h>
 
 #include <string>
+#include <vector>
 
 #include "ROSForwarderApplication.h"
 #include "IEEE802154_m.h"
@@ -24,14 +25,14 @@ int ROSForwarderApplication::instanceCounter = 0;
 ROSForwarderApplication::ROSForwarderApplication() :
 		nameSpace("/robot_" + to_string(instanceCounter++) + "/"), rosomnet(ROSOMNeT::getInstance()) {
 	cout << "ROSForwarderApplication constructor: " << nameSpace << endl;
-	startTry1Message = new cMessage(START_MESSAGE);
-	startTry2Message = new cMessage(START_MESSAGE);
+	timerMessage = new cMessage(TIMER_MESSAGE);
 }
 
 ROSForwarderApplication::~ROSForwarderApplication() {
 	cout << "ROSForwarderApplication destructor" << endl;
-//	delete startTry1Message;
-//	delete startTry2Message;
+// TODO: Properly delete message
+//	drop(timerMessage);
+//	delete timerMessage;
 }
 
 void ROSForwarderApplication::initialize(int stage) {
@@ -48,8 +49,8 @@ void ROSForwarderApplication::initialize(int stage) {
 }
 
 void ROSForwarderApplication::initializeStage0() {
-	scheduleAt(1, startTry1Message);
-	scheduleAt(2, startTry2Message);
+	cout << "Scheduling message at 0" << endl;
+	scheduleAt(0, timerMessage);
 }
 
 void ROSForwarderApplication::initializeStage1() {
@@ -59,6 +60,10 @@ void ROSForwarderApplication::initializeStage1() {
 	// Subscribe to ROS truth pose
 	truthPoseSubscriber = rosomnet.getROSNode().subscribe(nameSpace + TRUTH_POSE_TOPIC, TOPIC_QUEUE_LENGTH,
 			&ROSForwarderApplication::truthPoseCallback, this);
+
+	// Provide packet sender service
+	packetSenderService = rosomnet.getROSNode().advertiseService(nameSpace + PACKET_SENDER_SERVICE_NAME,
+			&ROSForwarderApplication::sendPacketCallback, this);
 }
 
 void ROSForwarderApplication::truthPoseCallback(const nav_msgs::Odometry &msg) {
@@ -71,30 +76,43 @@ void ROSForwarderApplication::truthPoseCallback(const nav_msgs::Odometry &msg) {
 	cout << nameSpace << " now at: (" << x << "," << y << "," << z << ")" << endl;
 }
 
+cPacket* ROSForwarderApplication::createFromData(const vector<uint8_t>& data) {
+	// Create packet
+	IEEE802154Packet *packet = new IEEE802154Packet(ROS_MANET_PACKET);
+	for(unsigned int i = 0; i < data.size(); i++) {
+		packet->setData(i, data[i]);
+	}
+
+	// Attach destination address
+	SimpleLinkLayerControlInfo* ctrl = new SimpleLinkLayerControlInfo();
+	ctrl->setDest(MACAddress::BROADCAST_ADDRESS);
+	packet->setControlInfo(ctrl);
+
+	return packet;
+}
+
+bool ROSForwarderApplication::sendPacketCallback(beeclickarm_messages::IEEE802154BroadcastPacket::Request& request,
+		beeclickarm_messages::IEEE802154BroadcastPacket::Response& response) {
+	vector<uint8_t> data = request.data;
+
+	// Schedule packet to broadcast
+	cout << "Queuing packet to be send by next OMNeT++ invocation" << endl;
+	messageToProcess.push(data);
+
+	return true;
+}
+
 void ROSForwarderApplication::handleMessage(cMessage *msg) {
 	cout << "ROSForwarderApplication handle message" << endl;
 
-	if (msg == startTry2Message) {
-		setPosition(0, 0, 0);
-	}
-
-	if (msg == startTry1Message || msg == startTry2Message) {
-		cout << "Start message received" << endl;
-
-		cout << "Sending packet at " << simTime() << endl;
-		IEEE802154Packet *packet = new IEEE802154Packet(ROS_MANET_PACKET);
-
-		packet->setData(0, 'h');
-		packet->setData(1, 'e');
-		packet->setData(2, 'l');
-		packet->setData(3, 'l');
-		packet->setData(4, 'o');
-
-		SimpleLinkLayerControlInfo* ctrl = new SimpleLinkLayerControlInfo();
-		ctrl->setDest(MACAddress::BROADCAST_ADDRESS);
-		packet->setControlInfo(ctrl);
-
-		send(packet, lower802154LayerOut);
+	if (msg == timerMessage) {
+		while(!messageToProcess.empty()) {
+			cout << "Sending queued packet" << endl;
+			cPacket* packet = createFromData(messageToProcess.front());
+			messageToProcess.pop();
+			send(packet, lower802154LayerOut);
+		}
+		scheduleAt(simTime() + PACKET_TRANSMIT_INTERVAL, timerMessage);
 	} else if (opp_strcmp(msg->getName(), ROS_MANET_PACKET) == 0) {
 		cout << "Received MANET packet: " << endl;
 		cout << ">> id:		" << msg->getId() << endl;
@@ -111,8 +129,6 @@ void ROSForwarderApplication::handleMessage(cMessage *msg) {
 		cout << "info: " << msg->info() << endl;
 		cout << "detailed info:" << msg->detailedInfo() << endl;
 	}
-
-	delete msg;
 }
 
 void ROSForwarderApplication::setPosition(const double x, const double y, const double z) {

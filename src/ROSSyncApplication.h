@@ -2,7 +2,7 @@
  * ROSSyncApplication.h
  *
  *  Created on: 19. 11. 2015
- *      Author: vlada
+ *      Author: Vladimir Matena
  */
 
 #ifndef SRC_ROSSYNCAPPLICATION_H
@@ -33,9 +33,9 @@ private:
 	const char* ROS_SYNC_MESSAGE = "@ROSSyncMessage@";
 	const string CLOCK_TOPIC = "/clock";
 
-	ROSOMNeT &rosomnet;
+	ROSOMNeT& rosomnet;
 	Subscriber clockSubscriber;
-	cMessage *syncMsg;
+	cMessage* syncMsg;
 	mutex syncMutex;
 	condition_variable syncCondition;
 

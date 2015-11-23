@@ -9,9 +9,14 @@
 #define SRC_ROSFORWARDERAPPLICATION_H
 
 #include <string>
+#include <queue>
 
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
+//#include <beeclickarm_messages/IEEE802154Packet.h>
+//#include <beeclickarm_messages/IEEE802154ReceivedPacket.h>
+#include <beeclickarm_messages/IEEE802154BroadcastPacket.h>
+#include <beeclickarm_messages/IEEE802154BroadcastPacket.h>
 
 #include <omnetpp.h>
 #include <inet/mobility/contract/IMobility.h>
@@ -30,10 +35,12 @@ public:
 	void setPosition(double x, double y, double z);
 
 private:
-	const char* ROS_MANET_PACKET = "@ROSManetPacket@";
-	const char* START_MESSAGE = "START_MESSAGE";
+	const char* ROS_MANET_PACKET = "@ROSManetPacketXXX@";
+	const char* TIMER_MESSAGE = "@TIMER_MESSAGE@";
 	const string TRUTH_POSE_TOPIC = "base_pose_ground_truth";
+	const string PACKET_SENDER_SERVICE_NAME = "MRF24J40/broadcast_packet";
 	const long TOPIC_QUEUE_LENGTH = 1000;
+	const double PACKET_TRANSMIT_INTERVAL = 0.100;
 
 	static int instanceCounter;
 
@@ -42,19 +49,27 @@ private:
 	void initialize(int stage);
 	void initializeStage0();
 	void initializeStage1();
-	int numInitStages() const { return 2; }
+	int numInitStages() const {
+		return 2;
+	}
 	void handleMessage(cMessage *msg);
 	IMobility* getMobilityModule();
-	void truthPoseCallback(const nav_msgs::Odometry &msg);
+	cPacket* createFromData(const vector<uint8_t>& data);
 
-	cMessage* startTry1Message;
-	cMessage* startTry2Message;
+	void truthPoseCallback(const nav_msgs::Odometry& msg);
+	bool sendPacketCallback(beeclickarm_messages::IEEE802154BroadcastPacket::Request& request,
+			beeclickarm_messages::IEEE802154BroadcastPacket::Response& response);
 
-    int lower802154LayerIn;
-    int lower802154LayerOut;
+	cMessage* timerMessage;
 
-    Subscriber truthPoseSubscriber;
-    Publisher receivedPacketPublisher;
+	queue<vector<uint8_t> > messageToProcess;
+
+	int lower802154LayerIn;
+	int lower802154LayerOut;
+
+	Subscriber truthPoseSubscriber;
+	Publisher receivedPacketPublisher;
+	ServiceServer packetSenderService;
 };
 
 #endif /* SRC_ROSFORWARDERAPPLICATION_H */
