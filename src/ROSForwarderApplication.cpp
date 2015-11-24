@@ -64,6 +64,10 @@ void ROSForwarderApplication::initializeStage1() {
 	// Provide packet sender service
 	packetSenderService = rosomnet.getROSNode().advertiseService(nameSpace + PACKET_SENDER_SERVICE_NAME,
 			&ROSForwarderApplication::sendPacketCallback, this);
+
+	// Create publisher for received packets
+	receivedPacketPublisher = rosomnet.getROSNode().advertise < beeclickarm_messages::IEEE802154ReceivedPacket
+			> (nameSpace + RECEIVED_PACKET_TOPIC, TOPIC_QUEUE_LENGTH);
 }
 
 void ROSForwarderApplication::truthPoseCallback(const nav_msgs::Odometry &msg) {
@@ -79,7 +83,8 @@ void ROSForwarderApplication::truthPoseCallback(const nav_msgs::Odometry &msg) {
 cPacket* ROSForwarderApplication::createFromData(const vector<uint8_t>& data) {
 	// Create packet
 	IEEE802154Packet *packet = new IEEE802154Packet(ROS_MANET_PACKET);
-	for(unsigned int i = 0; i < data.size(); i++) {
+	packet->setByteLength(data.size());
+	for (unsigned int i = 0; i < data.size(); i++) {
 		packet->setData(i, data[i]);
 	}
 
@@ -93,20 +98,30 @@ cPacket* ROSForwarderApplication::createFromData(const vector<uint8_t>& data) {
 
 bool ROSForwarderApplication::sendPacketCallback(beeclickarm_messages::IEEE802154BroadcastPacket::Request& request,
 		beeclickarm_messages::IEEE802154BroadcastPacket::Response& response) {
-	vector<uint8_t> data = request.data;
+	vector < uint8_t > data = request.data;
 
 	// Schedule packet to broadcast
 	cout << "Queuing packet to be send by next OMNeT++ invocation" << endl;
+	cout << ">> data:	";
+	printData(data);
+
 	messageToProcess.push(data);
 
 	return true;
+}
+
+void ROSForwarderApplication::printData(const vector<uint8_t>& data) {
+	for(uint8_t b: data) {
+		cout << hex << ((uint32_t)b);
+	}
+	cout << endl;
 }
 
 void ROSForwarderApplication::handleMessage(cMessage *msg) {
 	cout << "ROSForwarderApplication handle message" << endl;
 
 	if (msg == timerMessage) {
-		while(!messageToProcess.empty()) {
+		while (!messageToProcess.empty()) {
 			cout << "Sending queued packet" << endl;
 			cPacket* packet = createFromData(messageToProcess.front());
 			messageToProcess.pop();
@@ -119,11 +134,26 @@ void ROSForwarderApplication::handleMessage(cMessage *msg) {
 		cout << ">> time:	" << simTime() << endl;
 
 		IEEE802154Packet *ieee802154Packet = check_and_cast<IEEE802154Packet*>(msg);
-		char *data = new char[ieee802154Packet->getDataArraySize()];
-		for (unsigned int i = 0; i < ieee802154Packet->getDataArraySize(); ++i) {
-			data[i] = ieee802154Packet->getData(i);
+
+		cout << "Publishing message to topic" << endl;
+		beeclickarm_messages::IEEE802154ReceivedPacket receivedPacketMsg;
+		receivedPacketMsg.rssi = 1;
+		receivedPacketMsg.fcs = 1;
+		receivedPacketMsg.lqi = 1;
+		receivedPacketMsg.srcPanId = 1;
+		receivedPacketMsg.srcSAddr = 1;
+		const unsigned long size = min((int64_t)ieee802154Packet->getDataArraySize(), ieee802154Packet->getByteLength());
+		for (unsigned int i = 0; i < size; ++i) {
+			receivedPacketMsg.data.push_back(ieee802154Packet->getData(i));
 		}
-		cout << ">> data:	" << hex << data << endl;
+
+		cout << ">> dataarraysize: " << ieee802154Packet->getDataArraySize() << endl;
+		cout << ">> bytelength: " << ieee802154Packet->getByteLength() << endl;
+		cout << ">> data:	";
+		printData(receivedPacketMsg.data);
+
+		receivedPacketPublisher.publish(receivedPacketMsg);
+		cout << "Message published" << endl;
 	} else {
 		cout << "Received unknown message name: \"" << msg->getName() << "\" at: " << simTime() << endl;
 		cout << "info: " << msg->info() << endl;

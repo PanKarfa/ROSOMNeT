@@ -13,8 +13,7 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
-//#include <beeclickarm_messages/IEEE802154Packet.h>
-//#include <beeclickarm_messages/IEEE802154ReceivedPacket.h>
+#include <beeclickarm_messages/IEEE802154ReceivedPacket.h>
 #include <beeclickarm_messages/IEEE802154BroadcastPacket.h>
 #include <beeclickarm_messages/IEEE802154BroadcastPacket.h>
 
@@ -35,10 +34,11 @@ public:
 	void setPosition(double x, double y, double z);
 
 private:
-	const char* ROS_MANET_PACKET = "@ROSManetPacketXXX@";
+	const char* ROS_MANET_PACKET = "@ROSManetPacket@";
 	const char* TIMER_MESSAGE = "@TIMER_MESSAGE@";
 	const string TRUTH_POSE_TOPIC = "base_pose_ground_truth";
 	const string PACKET_SENDER_SERVICE_NAME = "MRF24J40/broadcast_packet";
+	const string RECEIVED_PACKET_TOPIC = "MRF24J40/received_packets";
 	const long TOPIC_QUEUE_LENGTH = 1000;
 	const double PACKET_TRANSMIT_INTERVAL = 0.100;
 
@@ -55,6 +55,7 @@ private:
 	void handleMessage(cMessage *msg);
 	IMobility* getMobilityModule();
 	cPacket* createFromData(const vector<uint8_t>& data);
+	static void printData(const vector<uint8_t>& data);
 
 	void truthPoseCallback(const nav_msgs::Odometry& msg);
 	bool sendPacketCallback(beeclickarm_messages::IEEE802154BroadcastPacket::Request& request,
