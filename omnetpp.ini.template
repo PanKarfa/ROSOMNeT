@@ -1,0 +1,54 @@
+[General]
+network = manet.MANET
+
+load-libs = /opt/omnetpp-4.6/lib/oppcmdenvd
+ned-path = model;/opt/inet-3.1.1/src
+
+cmdenv-config-name = omnetpp
+
+[Config omnetpp]
+##########################################################
+#					Logging                 			 #
+##########################################################
+cmdenv-express-mode = true
+cmdenv-event-banners = false
+**.debug = false
+cmdenv-module-messages = false
+**.coreDebug = false
+##############################################################################
+#       Parameters for the 802.15.4 MAC-Layer                                #
+##############################################################################
+
+**.nic802154.mac.txPower = 1mW  # [mW]
+**.nic802154.mac.notAffectedByHostState = true
+**.nic802154.mac.macMinBE = 1
+**.nic802154.mac.macMaxBE = 6
+**.nic802154.mac.macMaxCSMABackoffs = 20
+**.nic802154.mac.macAckWaitDuration = 0.000864s
+**.nic802154.mac.aUnitBackoffPeriod = 0.02s
+
+##############################################################################
+#       Parameters for the 802.15.4 Phy                                      #
+##############################################################################
+
+**.nic802154.phy.usePropagationDelay = false
+**.nic802154.phy.analogueModels = xmldoc("omnet/config802154.xml")
+**.nic802154.phy.decider = xmldoc("omnet\\Nic802154_TI_CC2420_Decider.xml")
+**.nic802154.phy.sensitivity = -100dBm
+**.nic802154.phy.maxTXPower = 1.1mW
+**.nic802154.phy.initialRadioState = 0
+**.nic802154.phy.useThermalNoise = true
+
+##########################################################
+#       			Nodes Mobility                       #
+##########################################################
+**.node[*].mobility.initFromDisplayString = false
+
+**.playgroundSizeX = 10000m
+**.playgroundSizeY = 10000m
+
+**.node[*].mobility.initialX = 0m
+**.node[*].mobility.initialY = 0m
+**.node[*].mobility.initialZ = 0m
+
+**.numNodes = 

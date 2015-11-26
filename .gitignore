@@ -4,3 +4,4 @@ main
 src/Makefile
 out
 results
+omnetpp.ini.generated
