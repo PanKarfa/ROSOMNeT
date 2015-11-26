@@ -40,7 +40,7 @@ private:
 	const string PACKET_SENDER_SERVICE_NAME = "MRF24J40/broadcast_packet";
 	const string RECEIVED_PACKET_TOPIC = "MRF24J40/received_packets";
 	const long TOPIC_QUEUE_LENGTH = 1000;
-	const double PACKET_TRANSMIT_INTERVAL = 0.100;
+	const double PACKET_TRANSMIT_INTERVAL = 0.010;
 
 	static int instanceCounter;
 

@@ -2,7 +2,6 @@
 
 #include <std_msgs/String.h>
 
-#include "ROSNode.h"
 #include "ROSOMNeT.h"
 
 using namespace std;

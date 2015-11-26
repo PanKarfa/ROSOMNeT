@@ -10,6 +10,8 @@
 
 #include <string>
 #include <vector>
+#include <chrono>
+#include <thread>
 
 #include "ROSForwarderApplication.h"
 #include "IEEE802154_m.h"
@@ -101,7 +103,7 @@ bool ROSForwarderApplication::sendPacketCallback(beeclickarm_messages::IEEE80215
 	vector < uint8_t > data = request.data;
 
 	// Schedule packet to broadcast
-	cout << "Queuing packet to be send by next OMNeT++ invocation" << endl;
+	cout << "Queuing packet to be send by next OMNeT++ invocation: " << nameSpace << endl;
 	cout << ">> data:	";
 	printData(data);
 
@@ -115,14 +117,24 @@ void ROSForwarderApplication::printData(const vector<uint8_t>& data) {
 		cout << hex << ((uint32_t)b);
 	}
 	cout << endl;
+
+	struct L1Header {
+		uint16_t totalSize;
+		uint16_t payloadSize;
+		uint16_t startPos;
+		uint16_t dataId;
+		uint8_t srcNode;
+		uint8_t payload;
+	};
+
+	L1Header *header = (L1Header*)data.data();
+
+	cout << dec << "DataId: " << header->dataId << " srcNode:" << ((uint32_t)header->srcNode) << " start:" << header->startPos << " length: " << header->payloadSize << " end:" << (header->startPos + header->payloadSize) << endl;
 }
 
 void ROSForwarderApplication::handleMessage(cMessage *msg) {
-	cout << "ROSForwarderApplication handle message" << endl;
-
 	if (msg == timerMessage) {
-		while (!messageToProcess.empty()) {
-			cout << "Sending queued packet" << endl;
+		if (!messageToProcess.empty()) {
 			cPacket* packet = createFromData(messageToProcess.front());
 			messageToProcess.pop();
 			send(packet, lower802154LayerOut);
@@ -130,12 +142,10 @@ void ROSForwarderApplication::handleMessage(cMessage *msg) {
 		scheduleAt(simTime() + PACKET_TRANSMIT_INTERVAL, timerMessage);
 	} else if (opp_strcmp(msg->getName(), ROS_MANET_PACKET) == 0) {
 		cout << "Received MANET packet: " << endl;
-		cout << ">> id:		" << msg->getId() << endl;
-		cout << ">> time:	" << simTime() << endl;
 
 		IEEE802154Packet *ieee802154Packet = check_and_cast<IEEE802154Packet*>(msg);
 
-		cout << "Publishing message to topic" << endl;
+		cout << "Publishing message to topic: " << nameSpace << endl;
 		beeclickarm_messages::IEEE802154ReceivedPacket receivedPacketMsg;
 		receivedPacketMsg.rssi = 1;
 		receivedPacketMsg.fcs = 1;
@@ -146,14 +156,13 @@ void ROSForwarderApplication::handleMessage(cMessage *msg) {
 		for (unsigned int i = 0; i < size; ++i) {
 			receivedPacketMsg.data.push_back(ieee802154Packet->getData(i));
 		}
-
-		cout << ">> dataarraysize: " << ieee802154Packet->getDataArraySize() << endl;
-		cout << ">> bytelength: " << ieee802154Packet->getByteLength() << endl;
 		cout << ">> data:	";
 		printData(receivedPacketMsg.data);
 
 		receivedPacketPublisher.publish(receivedPacketMsg);
+
 		cout << "Message published" << endl;
+		delete msg;
 	} else {
 		cout << "Received unknown message name: \"" << msg->getName() << "\" at: " << simTime() << endl;
 		cout << "info: " << msg->info() << endl;
