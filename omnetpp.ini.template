@@ -8,39 +8,21 @@ cmdenv-config-name = omnetpp
 
 [Config omnetpp]
 ##########################################################
-#					Logging                 			 #
+# Logging                                   			 #
 ##########################################################
 cmdenv-express-mode = true
 cmdenv-event-banners = false
 **.debug = false
 cmdenv-module-messages = false
 **.coreDebug = false
-##############################################################################
-#       Parameters for the 802.15.4 MAC-Layer                                #
-##############################################################################
-
-**.nic802154.mac.txPower = 1mW  # [mW]
-**.nic802154.mac.notAffectedByHostState = true
-**.nic802154.mac.macMinBE = 1
-**.nic802154.mac.macMaxBE = 6
-**.nic802154.mac.macMaxCSMABackoffs = 20
-**.nic802154.mac.macAckWaitDuration = 0.000864s
-**.nic802154.mac.aUnitBackoffPeriod = 0.02s
-
-##############################################################################
-#       Parameters for the 802.15.4 Phy                                      #
-##############################################################################
-
-**.nic802154.phy.usePropagationDelay = false
-**.nic802154.phy.analogueModels = xmldoc("omnet/config802154.xml")
-**.nic802154.phy.decider = xmldoc("omnet\\Nic802154_TI_CC2420_Decider.xml")
-**.nic802154.phy.sensitivity = -100dBm
-**.nic802154.phy.maxTXPower = 1.1mW
-**.nic802154.phy.initialRadioState = 0
-**.nic802154.phy.useThermalNoise = true
 
 ##########################################################
-#       			Nodes Mobility                       #
+# Parameters for IEEE 802.15.4 radio interface           # 
+##########################################################
+**.nic802154.radio.transmitter.power = 2.2mW
+
+##########################################################
+# Nodes Mobility                                         #
 ##########################################################
 **.node[*].mobility.initFromDisplayString = false
 
@@ -51,4 +33,7 @@ cmdenv-module-messages = false
 **.node[*].mobility.initialY = 0m
 **.node[*].mobility.initialZ = 0m
 
+###########################################################
+# Simulation run specific (followed by generated config)  #
+###########################################################
 **.numNodes = 
