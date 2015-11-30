@@ -44,25 +44,7 @@ network MANET
         
         @display("bgb=469,300,white;bgp=10,50");
     submodules:
-        
-//        world: BaseWorldUtility {
-//            parameters:
-//                playgroundSizeX = playgroundSizeX;
-//                playgroundSizeY = playgroundSizeY;
-//                playgroundSizeZ = playgroundSizeZ;
-//                @display("p=37,25");
-//        }
-
-//        channel802154: ConnectionManager {
-//            parameters:
-//                @display("p=264,25");
-//       }
-//        channelControl: ChannelControl {
-//            parameters:
-//            	@display("p=391,24");
-//        }
-
-		radioMedium: Ieee802154NarrowbandScalarRadioMedium {
+ 		radioMedium: Ieee802154NarrowbandScalarRadioMedium {
             parameters:
                 @display("p=61,46");
         }
