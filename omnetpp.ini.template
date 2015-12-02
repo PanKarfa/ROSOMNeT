@@ -1,7 +1,6 @@
 [General]
 network = manet.MANET
 
-load-libs = /opt/omnetpp-4.6/lib/oppcmdenvd
 ned-path = model;/opt/inet-3.1.1/src
 
 cmdenv-config-name = omnetpp
