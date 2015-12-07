@@ -18,7 +18,19 @@ cmdenv-module-messages = false
 ##########################################################
 # Parameters for IEEE 802.15.4 radio interface           # 
 ##########################################################
-**.nic802154.radio.transmitter.power = 2.2mW
+
+# Full power
+#**.nic802154.radio.transmitter.power = 2.2mW
+
+# -36db
+**.nic802154.radio.transmitter.power = 0.000552615mW
+
+# -30db
+#**.nic802154.radio.transmitter.power = 0.0022mW
+
+# -24db 
+#**.nic802154.radio.transmitter.power = 0.00875836mW
+
 
 ##########################################################
 # Nodes Mobility                                         #
@@ -31,6 +43,19 @@ cmdenv-module-messages = false
 **.node[*].mobility.initialX = 0m
 **.node[*].mobility.initialY = 0m
 **.node[*].mobility.initialZ = 0m
+
+**.config = xmldoc("corridor.xml")
+
+# environment
+**.spaceMinX = -1000m
+**.spaceMinY = -1000m
+**.spaceMinZ = -1000m
+**.spaceMaxX = 1000m
+**.spaceMaxY = 1000m
+**.spaceMaxZ = 1000m
+
+# medium
+**.obstacleLossType = "TracingObstacleLoss"
 
 ###########################################################
 # Simulation run specific (followed by generated config)  #

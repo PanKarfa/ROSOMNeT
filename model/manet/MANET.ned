@@ -16,18 +16,8 @@
 package manet;
 
 import inet.world.radio.ChannelControl;
-
+import inet.environment.common.PhysicalEnvironment;
 import inet.physicallayer.ieee802154.packetlevel.Ieee802154NarrowbandScalarRadioMedium;
-
-import inet.networklayer.autorouting.ipv4.FlatNetworkConfigurator;
-import inet.nodes.inet.Router;
-import inet.nodes.inet.StandardHost;
-import inet.nodes.inet.WirelessHost;
-import inet.world.radio.ChannelControl;
-import org.mixim.base.connectionManager.ConnectionManager;
-import org.mixim.base.modules.BaseWorldUtility;
-import inet.nodes.inet.Router;
-import inet.networklayer.autorouting.ipv4.IPv4NetworkConfigurator;
 
 network MANET
 {
@@ -44,6 +34,7 @@ network MANET
         
         @display("bgb=469,300,white;bgp=10,50");
     submodules:
+		environment: PhysicalEnvironment {}
  		radioMedium: Ieee802154NarrowbandScalarRadioMedium {
             parameters:
                 @display("p=61,46");
