@@ -44,8 +44,6 @@ cmdenv-module-messages = false
 **.node[*].mobility.initialY = 0m
 **.node[*].mobility.initialZ = 0m
 
-**.config = xmldoc("corridor.xml")
-
 # environment
 **.spaceMinX = -1000m
 **.spaceMinY = -1000m
@@ -60,4 +58,3 @@ cmdenv-module-messages = false
 ###########################################################
 # Simulation run specific (followed by generated config)  #
 ###########################################################
-**.numNodes = 

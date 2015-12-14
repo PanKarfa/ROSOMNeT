@@ -108,10 +108,10 @@ void ROSOMNeT::runSimulation(string configFileName) {
 			delete bootconfig;
 			bootconfig = NULL;
 
-			// Load libs from this config as well
+		/*	// Load libs from this config as well
 			std::vector < std::string > libs = configobject->getAsFilenames(CFGID_LOAD_LIBS);
 			for (int k = 0; k < (int) libs.size(); k++)
-				loadExtensionLibrary(libs[k].c_str());
+				loadExtensionLibrary(libs[k].c_str());*/
 		}
 
 		// Validate the configuration
