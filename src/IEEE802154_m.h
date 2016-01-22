@@ -34,14 +34,14 @@
  * //
  * packet IEEE802154Packet
  * {
- *     unsigned char data[128];
+ *     unsigned char data[1024];
  * }
  * </pre>
  */
 class IEEE802154Packet : public ::cPacket
 {
   protected:
-    unsigned char data_var[128];
+    unsigned char data_var[1024];
 
   private:
     void copy(const IEEE802154Packet& other);

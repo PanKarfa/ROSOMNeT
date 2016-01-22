@@ -13,5 +13,5 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 packet IEEE802154Packet {
-     unsigned char data [128];
+     unsigned char data [1024];
 }

@@ -57,7 +57,7 @@ Register_Class(IEEE802154Packet);
 
 IEEE802154Packet::IEEE802154Packet(const char *name, int kind) : ::cPacket(name,kind)
 {
-    for (unsigned int i=0; i<128; i++)
+    for (unsigned int i=0; i<1024; i++)
         this->data_var[i] = 0;
 }
 
@@ -80,36 +80,36 @@ IEEE802154Packet& IEEE802154Packet::operator=(const IEEE802154Packet& other)
 
 void IEEE802154Packet::copy(const IEEE802154Packet& other)
 {
-    for (unsigned int i=0; i<128; i++)
+    for (unsigned int i=0; i<1024; i++)
         this->data_var[i] = other.data_var[i];
 }
 
 void IEEE802154Packet::parsimPack(cCommBuffer *b)
 {
     ::cPacket::parsimPack(b);
-    doPacking(b,this->data_var,128);
+    doPacking(b,this->data_var,1024);
 }
 
 void IEEE802154Packet::parsimUnpack(cCommBuffer *b)
 {
     ::cPacket::parsimUnpack(b);
-    doUnpacking(b,this->data_var,128);
+    doUnpacking(b,this->data_var,1024);
 }
 
 unsigned int IEEE802154Packet::getDataArraySize() const
 {
-    return 128;
+    return 1024;
 }
 
 unsigned char IEEE802154Packet::getData(unsigned int k) const
 {
-    if (k>=128) throw cRuntimeError("Array of size 128 indexed by %lu", (unsigned long)k);
+    if (k>=1024) throw cRuntimeError("Array of size 1024 indexed by %lu", (unsigned long)k);
     return data_var[k];
 }
 
 void IEEE802154Packet::setData(unsigned int k, unsigned char data)
 {
-    if (k>=128) throw cRuntimeError("Array of size 128 indexed by %lu", (unsigned long)k);
+    if (k>=1024) throw cRuntimeError("Array of size 1024 indexed by %lu", (unsigned long)k);
     this->data_var[k] = data;
 }
 
@@ -236,7 +236,7 @@ int IEEE802154PacketDescriptor::getArraySize(void *object, int field) const
     }
     IEEE802154Packet *pp = (IEEE802154Packet *)object; (void)pp;
     switch (field) {
-        case 0: return 128;
+        case 0: return 1024;
         default: return 0;
     }
 }
