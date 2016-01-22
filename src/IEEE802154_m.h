@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by nedtool 4.6 from src/IEEE802154.msg.
+// Generated file, do not edit! Created by nedtool 4.6 from IEEE802154.msg.
 //
 
 #ifndef _IEEE802154_M_H_
@@ -16,7 +16,7 @@
 
 
 /**
- * Class generated from <tt>src/IEEE802154.msg:15</tt> by nedtool.
+ * Class generated from <tt>IEEE802154.msg:15</tt> by nedtool.
  * <pre>
  * //
  * // This program is free software: you can redistribute it and/or modify

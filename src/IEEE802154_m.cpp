@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by nedtool 4.6 from src/IEEE802154.msg.
+// Generated file, do not edit! Created by nedtool 4.6 from IEEE802154.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
